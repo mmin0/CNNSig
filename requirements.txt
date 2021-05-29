@@ -1,0 +1,7 @@
+sktime
+tqdm
+sklearn
+torch==1.6.0
+torchvision==0.7.0
+torchtext==0.7
+signatory==1.2.4.1.6.0

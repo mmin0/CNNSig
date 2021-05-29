@@ -1,0 +1,112 @@
+=========Dataset: PEMS-SF==========
+Rocket training time: 0.0m 13.35s
+Rocket: dataset--PEMS-SF, testing acc--0.7976878612716763
+(963, 1): CV Loss: 1.871779---CV Acc: 25.28%---CV Epochs: 42
+(963, 2): CV Loss: 1.827091---CV Acc: 27.55%---CV Epochs: 37
+(963, 3): CV Loss: 2.011127---CV Acc: 24.15%---CV Epochs: 45
+(481, 1): CV Loss: 1.828801---CV Acc: 32.08%---CV Epochs: 25
+(481, 2): CV Loss: 1.861492---CV Acc: 27.17%---CV Epochs: 26
+(481, 3): CV Loss: 1.820643---CV Acc: 24.91%---CV Epochs: 44
+(321, 1): CV Loss: 1.765484---CV Acc: 29.81%---CV Epochs: 30
+(321, 2): CV Loss: 1.789652---CV Acc: 29.81%---CV Epochs: 28
+(321, 3): CV Loss: 1.933324---CV Acc: 28.3%---CV Epochs: 29
+best model parameter: (c, h)=321, 1) --- best CV Loss: 1.765484
+training time: 33.0m 46.37s
+Train loss: 0.0036066374741494656
+CNNSig: dataset--PEMS-SF, testing acc--78.03%
+=========Dataset: JapaneseVowels==========
+Rocket training time: 0.0m 0.55s
+Rocket: dataset--JapaneseVowels, testing acc--0.9567567567567568
+(12, 1): CV Loss: 2.037638---CV Acc: 27.41%---CV Epochs: 24
+(12, 2): CV Loss: 1.995058---CV Acc: 28.52%---CV Epochs: 40
+(12, 3): CV Loss: 1.914965---CV Acc: 31.11%---CV Epochs: 31
+(6, 1): CV Loss: 2.026---CV Acc: 29.63%---CV Epochs: 21
+(6, 2): CV Loss: 1.982254---CV Acc: 26.3%---CV Epochs: 30
+(6, 3): CV Loss: 2.00207---CV Acc: 25.56%---CV Epochs: 34
+(4, 1): CV Loss: 2.041392---CV Acc: 25.93%---CV Epochs: 42
+(4, 2): CV Loss: 1.981427---CV Acc: 30.74%---CV Epochs: 23
+(4, 3): CV Loss: 2.024615---CV Acc: 26.3%---CV Epochs: 35
+best model parameter: (c, h)=12, 3) --- best CV Loss: 1.914965
+training time: 9.0m 48.86s
+Train loss: 0.16948573685744228
+CNNSig: dataset--JapaneseVowels, testing acc--95.14%
+=========Dataset: FingerMovements==========
+Rocket training time: 0.0m 0.62s
+Rocket: dataset--FingerMovements, testing acc--0.5
+(28, 1): CV Loss: 0.806369---CV Acc: 50.16%---CV Epochs: 26
+(28, 2): CV Loss: 0.784411---CV Acc: 48.57%---CV Epochs: 27
+(28, 3): CV Loss: 0.924383---CV Acc: 46.98%---CV Epochs: 16
+(14, 1): CV Loss: 0.807014---CV Acc: 50.16%---CV Epochs: 30
+(14, 2): CV Loss: 0.885159---CV Acc: 46.67%---CV Epochs: 16
+(14, 3): CV Loss: 0.923883---CV Acc: 50.16%---CV Epochs: 24
+(9, 1): CV Loss: 0.776309---CV Acc: 50.79%---CV Epochs: 41
+(9, 2): CV Loss: 0.748907---CV Acc: 53.65%---CV Epochs: 38
+(9, 3): CV Loss: 0.932242---CV Acc: 49.84%---CV Epochs: 19
+best model parameter: (c, h)=9, 2) --- best CV Loss: 0.748907
+training time: 11.0m 15.58s
+Train loss: 0.6358101785182952
+CNNSig: dataset--FingerMovements, testing acc--51.0%
+=========Dataset: FaceDetection==========
+Rocket training time: 0.0m 54.07s
+Rocket: dataset--FaceDetection, testing acc--0.5993189557321226
+(144, 1): CV Loss: 1.294095---CV Acc: 51.21%---CV Epochs: 14
+(144, 2): CV Loss: 1.286957---CV Acc: 50.59%---CV Epochs: 29
+(144, 3): CV Loss: 1.095184---CV Acc: 51.41%---CV Epochs: 14
+(72, 1): CV Loss: 0.981604---CV Acc: 49.81%---CV Epochs: 24
+(72, 2): CV Loss: 1.13831---CV Acc: 51.0%---CV Epochs: 24
+(72, 3): CV Loss: 1.236784---CV Acc: 49.88%---CV Epochs: 23
+(48, 1): CV Loss: 1.104074---CV Acc: 50.93%---CV Epochs: 21
+(48, 2): CV Loss: 1.069043---CV Acc: 49.81%---CV Epochs: 16
+(48, 3): CV Loss: 1.149936---CV Acc: 49.8%---CV Epochs: 19
+best model parameter: (c, h)=72, 1) --- best CV Loss: 0.981604
+training time: 336.0m 59.65s
+Train loss: 0.2625446800940082
+CNNSig: dataset--FaceDetection, testing acc--52.64%
+=========Dataset: PhonemeSpectra==========
+Rocket training time: 0.0m 6.43s
+Rocket: dataset--PhonemeSpectra, testing acc--0.03071875932001193
+(11, 1): CV Loss: 3.96359---CV Acc: 3.53%---CV Epochs: 21
+(11, 2): CV Loss: 3.889256---CV Acc: 4.98%---CV Epochs: 43
+(11, 3): CV Loss: 3.828527---CV Acc: 4.95%---CV Epochs: 43
+(5, 1): CV Loss: 3.803997---CV Acc: 3.89%---CV Epochs: 38
+(5, 2): CV Loss: 3.799305---CV Acc: 5.85%---CV Epochs: 22
+(5, 3): CV Loss: 3.819459---CV Acc: 5.19%---CV Epochs: 37
+(3, 1): CV Loss: 3.780398---CV Acc: 3.86%---CV Epochs: 22
+(3, 2): CV Loss: 3.739237---CV Acc: 5.43%---CV Epochs: 39
+(3, 3): CV Loss: 3.74353---CV Acc: 4.31%---CV Epochs: 26
+best model parameter: (c, h)=3, 2) --- best CV Loss: 3.739237
+training time: 194.0m 28.19s
+Train loss: 2.95526872919156
+CNNSig: dataset--PhonemeSpectra, testing acc--11.63%
+=========Dataset: MotorImagery==========
+Rocket training time: 0.0m 1.92s
+Rocket: dataset--MotorImagery, testing acc--0.63
+(64, 1): CV Loss: 0.852127---CV Acc: 54.91%---CV Epochs: 21
+(64, 2): CV Loss: 0.901301---CV Acc: 50.55%---CV Epochs: 25
+(64, 3): CV Loss: 0.841862---CV Acc: 49.09%---CV Epochs: 22
+(32, 1): CV Loss: 0.882329---CV Acc: 53.09%---CV Epochs: 20
+(32, 2): CV Loss: 0.836247---CV Acc: 56.0%---CV Epochs: 32
+(32, 3): CV Loss: 0.818859---CV Acc: 49.82%---CV Epochs: 25
+(21, 1): CV Loss: 0.867927---CV Acc: 49.09%---CV Epochs: 33
+(21, 2): CV Loss: 0.86314---CV Acc: 52.73%---CV Epochs: 27
+(21, 3): CV Loss: 0.770443---CV Acc: 54.18%---CV Epochs: 18
+best model parameter: (c, h)=21, 3) --- best CV Loss: 0.770443
+training time: 126.0m 26.96s
+Train loss: 0.7311468753549788
+CNNSig: dataset--MotorImagery, testing acc--45.0%
+=========Dataset: Heartbeat==========
+Rocket training time: 0.0m 1.01s
+Rocket: dataset--Heartbeat, testing acc--0.7317073170731707
+(61, 1): CV Loss: 0.742356---CV Acc: 56.0%---CV Epochs: 19
+(61, 2): CV Loss: 0.712159---CV Acc: 61.5%---CV Epochs: 28
+(61, 3): CV Loss: 0.665258---CV Acc: 72.5%---CV Epochs: 17
+(30, 1): CV Loss: 0.717085---CV Acc: 68.0%---CV Epochs: 40
+(30, 2): CV Loss: 0.752593---CV Acc: 56.5%---CV Epochs: 20
+(30, 3): CV Loss: 0.975626---CV Acc: 42.0%---CV Epochs: 35
+(20, 1): CV Loss: 0.744072---CV Acc: 60.5%---CV Epochs: 26
+(20, 2): CV Loss: 0.942904---CV Acc: 41.5%---CV Epochs: 9
+(20, 3): CV Loss: 0.841068---CV Acc: 52.0%---CV Epochs: 25
+best model parameter: (c, h)=61, 3) --- best CV Loss: 0.665258
+training time: 23.0m 8.79s
+Train loss: 0.4206281476295911
+CNNSig: dataset--Heartbeat, testing acc--70.73%
