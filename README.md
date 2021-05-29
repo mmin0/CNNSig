@@ -2,7 +2,7 @@
 This is the implementation for experiments in CNN-Sig project.
     
 ## Installment
-    Install required packages with correct version
+Install required packages with correct version
     
 ```
 # need to maintain correct versions of packages
