@@ -11,8 +11,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import time, sys
-from torchtext.legacy import data
-from torchtext.legacy import datasets
+from torchtext import data
+from torchtext import datasets
 import random
 
 def count_parameters(model):
@@ -26,7 +26,7 @@ if __name__=="__main__":
     torch.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
 
-    TEXT = data.Field(tokenize='spacy', include_lengths=True)
+    TEXT = data.Field(tokenize='spacy', tokenizer_language = 'en_core_web_sm', include_lengths=True)
     LABEL = data.LabelField(dtype = torch.float32)
 
     train_data, test_data = datasets.IMDB.splits(TEXT, LABEL)
