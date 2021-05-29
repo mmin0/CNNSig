@@ -19,3 +19,9 @@ Use the following code to run (HDTS) with signature depth 3, training epochs 60,
 # by change the file hdts_classification.py, one can easily add desired time series that want to be classified
 python3 hdts_classification.py --depth 3 --epochs 60 --batch_size 16 --rocket True
 ``` 
+
+### NLP sentimental analysis
+First need to download english model from spacy
+```
+python -m spacy download en_core_web_sm
+```
