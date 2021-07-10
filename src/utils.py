@@ -7,7 +7,8 @@ Created on Wed May 12 16:17:10 2021
 """
 import torch
 import numpy as np
-import torch.multiprocessing as mp
+#import torch.multiprocessing as mp
+from .model import CNNSigNLP, RNN
 
 
 def prepareDataLoader(x, y, l, in_channels, batch_size, device):
@@ -24,6 +25,17 @@ def epoch_time(start_time, end_time):
     elap_min = elap_time//60
     elap_sec = elap_time % 60
     return elap_min, elap_sec
+
+
+def missingValue(dat, p):
+    """
+    input:
+        dat     - torch.tensor, data to be modified
+        p       - float, missing probability
+    """
+    rand = np.random.uniform(size = dat.shape)
+    dat[rand<p] = 0
+    return dat
 
 
 def train(model, dataloader, optimizer, criterion, device):
@@ -106,6 +118,7 @@ def CrossValidation(k, x, y, model, optimizer, criterion, lr, epochs, batch_size
         trainDataLoader = prepareDataLoader(train_x, train_y, l, in_channels, batch_size, device)
         best_valid_loss = float('inf')
         best_epoch = 0
+        optimizer.param_groups[0]['lr'] = lr
         for epoch in range(epochs):
             if epoch > 30:
                 optimizer.param_groups[0]['lr'] /= 10
@@ -114,12 +127,14 @@ def CrossValidation(k, x, y, model, optimizer, criterion, lr, epochs, batch_size
             if valid_loss < best_valid_loss:
                 best_valid_loss = valid_loss
                 best_epoch = epoch
-        cv_loss += evaluate(model, testDataLoader, criterion, device)
-        cv_acc += acc(model, testDataLoader, device)
+                best_acc = acc(model, testDataLoader, device)
+        cv_loss += best_valid_loss #evaluate(model, testDataLoader, criterion, device)
+        cv_acc += best_acc
+        
         cv_epochs += best_epoch # control overfitting problem
     return cv_loss/k, cv_acc/k, cv_epochs//k
 
-
+'''
 def CrossValidationHelper(model, trainDataLoader, testDataLoader, optimizer, criterion, epochs, device):
     best_valid_loss = float('inf')
     best_epoch = 0
@@ -167,11 +182,11 @@ def CrossValidationParallel(k, x, y, model, optimizer, criterion, epochs, batch_
     for p in processes:
         p.join()
     return
+    '''
 
 def binary_acc(preds, y):
-    #rounded_preds = torch.round(preds)
-    #correct = (rounded_preds==y).float()
-    correct = (torch.max(preds, 1)[1]==y).float()
+    rounded_preds = torch.round(torch.sigmoid(preds))
+    correct = (rounded_preds==y).float()
     return correct.sum()/len(correct)
 
 def trainNLP(model, iterator, optimizer, criterion):
@@ -180,9 +195,13 @@ def trainNLP(model, iterator, optimizer, criterion):
     model.train()
     for batch in iterator:
         optimizer.zero_grad()
-        text, _ = batch.text
-        preds = model(text)
-        loss = criterion(preds, batch.label.long())
+        text, text_lengths = batch.text
+        if isinstance(model, CNNSigNLP):
+            preds = model(text).squeeze(1)
+        elif isinstance(model, RNN):
+            preds = model(text, text_lengths).squeeze(1)
+        
+        loss = criterion(preds, batch.label)
         acc = binary_acc(preds, batch.label)
         loss.backward()
         optimizer.step()
@@ -200,9 +219,12 @@ def evaluateNLP(model, iterator, criterion):
     model.eval()
     with torch.no_grad():
         for batch in iterator:
-            text, _ = batch.text
-            preds = model(text)
-            loss = criterion(preds, batch.label.long())
+            text, text_lengths = batch.text
+            if isinstance(model, CNNSigNLP):
+                preds = model(text).squeeze(1)
+            elif isinstance(model, RNN):
+                preds = model(text, text_lengths).squeeze(1)
+            loss = criterion(preds, batch.label)
             acc = binary_acc(preds, batch.label)
 
             epoch_loss += loss.item()

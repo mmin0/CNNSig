@@ -19,16 +19,18 @@ import torch.optim as optim
 import numpy as np
 import sys
 import time
+import json
+import torch.multiprocessing as mp
 
 
 
 _datasets = ['PEMS-SF', 
              'JapaneseVowels',
-             #'FingerMovements', 
-             #'FaceDetection', 
-             #'PhonemeSpectra', 
-             #'MotorImagery', 
-             #'Heartbeat'
+             'FingerMovements', 
+             'FaceDetection', 
+             'PhonemeSpectra', 
+             'MotorImagery', 
+             'Heartbeat'
              ] 
              
 
@@ -45,26 +47,26 @@ def padding(data):
   
     return data
 
-if __name__ == '__main__':
+def test(args, device):
     
-    
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--depth', type=int, help='signature depth', required=True)
-    parser.add_argument('--epochs', type=int, help='training epochs', required=True)
-    parser.add_argument('--batch_size', type=int, help='batch size', required=True)
-    parser.add_argument('--rocket', type=bool, help='implement ROCKET', default=False)
-    parser.add_argument('--miss_value', type=float, help='ratio of missing value', default=0)
-    
-    args = parser.parse_args()
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    args.task_id = device[-1]
+    if int(device[-1]) >= torch.cuda.device_count():
+        device = device[:-1]+str(int(device[-1])%torch.cuda.device_count())
     
     target_addr = sys.path[0]+'/results'
+    with open(target_addr+"/hdts_bestmodels.txt", 'rb') as handle:
+        data = handle.read()
+    best_models = json.loads(data)
+    
     f = open(target_addr+"/TrainningResult", "w")
     sys.stdout = f
     datasets = tqdm(_datasets, position=0, leave=True)
     
+    res = {}
+    
     for name in datasets:
         #load dataset
+        res[name] = {}
         print(f"=========Dataset: {name}==========")
         x_train, y_train, x_test, y_test = UCR_UEA_datasets().load_dataset(name)
         np.nan_to_num(x_train, copy=False)
@@ -99,6 +101,7 @@ if __name__ == '__main__':
             print(f"Rocket training time: {rocket_minute}m {round(rocket_second, 2)}s")
             print(f"Rocket: dataset--{name}, testing acc--{classifier.score(x_test_transform, y_test)}")
             
+            res[name]['rocket'] = classifier.score(x_test_transform, y_test)
             
             
             
@@ -108,11 +111,9 @@ if __name__ == '__main__':
         out_dimension = max(y_train) + 1
         
         # hyper parameters      
-        _cnnkernels = tqdm([(in_channels//gamma, h) for gamma in [1,2,3] for h in [1,2,3]], position=1, leave=False)
+        
         layers = [256]
         sig_depth = args.depth
-        epochs = args.epochs
-        
         
         trainDataLoader = prepareDataLoader(x_train[:batch_train], 
                                             y_train[:batch_train], 
@@ -127,57 +128,31 @@ if __name__ == '__main__':
                                            in_channels, 
                                            args.batch_size,
                                            device)
-        validDataLoader = testDataLoader
         
         # grid search for optimal (c, h)
-        best_valid_loss = float('inf')
-        best_acc = 0
-        saved_model_dir = 'trained_model/'
         lr = 0.001
         criterion = nn.CrossEntropyLoss().to(device)
         t_start = time.time()
-        k = 5 # k-fold Cross Validation
-        best_model_loss = float('inf')
-        for (c, h) in _cnnkernels:
-            _cnnkernels.set_description(f"CNN Kernel size: ({c}, {h})")
-            # specify overlap by define stride
-            #stride = None
-            classifier = model.CNNSigFF(in_channels, out_dimension, 
-                                        c, layers, sig_depth, 
-                                        h=h, stride=(h, c), 
-                                        out_channels=c).to(device)
+        
+        ###############
+        c = best_models[name]["c"]
+        h = best_models[name]["h"]
+        epochs = best_models[name]["epochs"]
+        ##############
+        # specify overlap by define stride
+        #stride = None
             
-            optimizer = optim.Adam(classifier.parameters(), lr=lr)
-            
-            cvLoss, cvAcc, cvEpochs = utils.CrossValidation(k,      # add for cross validation
-                                                            x_train, 
-                                                            y_train, 
-                                                            classifier, 
-                                                            optimizer, 
-                                                            criterion, 
-                                                            lr, 
-                                                            epochs, 
-                                                            args.batch_size, 
-                                                            device)
-            print(f"({c}, {h}): CV Loss: {round(cvLoss, 6)}---CV Acc: {round(cvAcc*100, 2)}%---CV Epochs: {cvEpochs}")
-            if cvLoss < best_model_loss: # choose model based on CV
-                best_c, best_h = c, h
-                best_model_loss = cvLoss
-                best_epochs = cvEpochs
-            
-            
-        # train classifier with best model
-        print(f"best model parameter: (c, h)={best_c}, {best_h}) --- best CV Loss: {round(best_model_loss, 6)}")
+        # classifier with best model
         classifier = model.CNNSigFF(in_channels, out_dimension, 
-                                    best_c, layers, sig_depth, 
-                                    h=best_h, stride=(best_h, best_c),
-                                    out_channels=best_c).to(device)
+                                    c, layers, sig_depth, 
+                                    h=h, stride=(h, c),
+                                    out_channels=c).to(device)
         optimizer = optim.Adam(classifier.parameters(), lr=lr)
-        for epoch in range(best_epochs):
-            if epoch > 30: 
+        for epoch in range(epochs):
+            if epoch > 30:
                 optimizer.param_groups[0]['lr'] /= 10
             train_loss = utils.train(classifier, trainDataLoader, optimizer, criterion, device)
-        torch.save(classifier.state_dict(), saved_model_dir+'classifer_'+name+'.net')
+        #torch.save(classifier.state_dict(), saved_model_dir+'classifer_'+name+'.net')
         
         t_end = time.time()
         epoch_minute, epoch_second = utils.epoch_time(t_start, t_end)
@@ -187,6 +162,53 @@ if __name__ == '__main__':
         # test model
         acc_test = utils.acc(classifier, testDataLoader, device)
         print(f"CNNSig: dataset--{name}, testing acc--{round(acc_test*100, 2)}%")
+        res[name]['CNNSig'] =  acc_test
     f.close()
+    
+    with open(target_addr+'/test'+str(args.task_id)+'.json', 'w') as fp:
+        json.dump(res, fp)
+    
+
+if __name__ == '__main__':
+    
+    '''
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--depth', type=int, help='signature depth', required=True)
+    #parser.add_argument('--epochs', type=int, help='training epochs', required=True)
+    parser.add_argument('--batch_size', type=int, help='batch size', required=True)
+    parser.add_argument('--rocket', type=bool, help='implement ROCKET', default=False)
+    
+    parser.add_argument('--miss_value', type=float, help='ratio of missing value', default=0)
+    parser.add_argument('--task_id', type=int, help='id of task', required=False)
+    
+    args = parser.parse_args()
+    #device = torch.device('cuda:'+str(args.gpu_id) if torch.cuda.is_available() else 'cpu')
+    
+    mp.set_start_method('spawn')
+    pool = mp.Pool(processes = 5)
+    with pool:
+        pool.starmap(test, [(args, 'cuda:'+str(i)) for i in range(5)])
+    '''
+    accs_rocket = {}
+    accs_cnnsig = {}
+    target_addr = 'results'#sys.path[0]+'/results'
+    for i in range(5):
+        with open(target_addr+"/test"+str(i)+'.json', 'rb') as f:
+            dat = f.read()
+        dat = json.loads(dat)
+        for name in _datasets:
+            try:
+                accs_rocket[name].append(dat[name]['rocket'])
+            except KeyError:
+                accs_rocket[name] = [dat[name]['rocket']]
             
-#python3 hdts_classification.py --depth 3 --epochs 50 --batch_size 32
+            try:
+                accs_cnnsig[name].append(dat[name]['CNNSig'])
+            except KeyError:
+                accs_cnnsig[name] = [dat[name]['CNNSig']]
+                
+    for name in _datasets:
+        print(f"ROCKET {name} datasets has mean {np.mean(accs_rocket[name])}, std {np.std(accs_rocket[name])}.")
+        print(f"CNNSig {name} datasets has mean {np.mean(accs_cnnsig[name])}, std {np.std(accs_cnnsig[name])}.")
+    
+                

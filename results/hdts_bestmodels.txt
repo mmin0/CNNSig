@@ -1,0 +1,9 @@
+{"PEMS-SF": {"c": 321, "h": 2, "epochs": 14},
+ "JapaneseVowels": {"c": 4, "h": 3, "epochs": 44},
+ "FingerMovements": {"c": 28, "h": 1, "epochs": 14},
+ "FaceDetection": {"c": 144, "h": 3, "epochs": 5},
+ "PhonemeSpectra": {"c": 5, "h": 2, "epochs": 37},
+ "MotorImagery": {"c": 64, "h": 1, "epochs": 12},
+ "Heartbeat": {"c": 30, "h": 1, "epochs": 15}
+ }
+
