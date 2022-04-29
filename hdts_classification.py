@@ -24,11 +24,11 @@ import time
 
 _datasets = ['PEMS-SF', 
              'JapaneseVowels',
-             #'FingerMovements', 
-             #'FaceDetection', 
-             #'PhonemeSpectra', 
-             #'MotorImagery', 
-             #'Heartbeat'
+             'FingerMovements', 
+             'FaceDetection', 
+             'PhonemeSpectra', 
+             'MotorImagery', 
+             'Heartbeat'
              ] 
              
 
